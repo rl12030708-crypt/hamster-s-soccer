@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0a1323">
+<meta name="description" content="Hamster S 축구 컨트롤러 실험판: iPhone Bluefy BLE 모터 명령 테스트">
+<title>Hamster S Soccer Controller</title>
+<style>
+:root{color-scheme:dark;--bg:#091320;--card:#111f31;--card2:#182b40;--edge:#2b455b;--txt:#eaf4ff;--muted:#a0b7cd;--lime:#b8f16b;--blue:#67c9f0;--danger:#ff7284;--amber:#ffd07a;--radius:20px;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;min-width:300px;background:radial-gradient(ellipse at 50% 0,#183149,#091320 66%);color:var(--txt);overflow-x:hidden}button,input,select{font:inherit}button{cursor:pointer;color:inherit}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:3px}button:disabled{opacity:.45;cursor:not-allowed}.hidden{display:none!important}
+.shell{max-width:1160px;margin:0 auto;padding:17px 18px 32px}.top{display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap;padding:4px 0 15px}.logo{display:flex;align-items:center;gap:11px}.mark{width:43px;height:43px;border-radius:14px;background:var(--lime);display:grid;place-items:center;color:#0b1822;font-size:24px;font-weight:900}.brand{font-size:19px;font-weight:850;letter-spacing:-.5px;line-height:1.12}.sub{color:var(--muted);font-size:11px;margin-top:5px;letter-spacing:.3px}.top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;border:1px solid var(--edge);padding:8px 12px;font-weight:650;font-size:12px;color:var(--muted);background:#0e1c2c}.dot{width:8px;height:8px;border-radius:50%;background:var(--amber);flex:none}.dot.green{background:var(--lime)}.dot.red{background:var(--danger)}
+.btn{border:1px solid var(--edge);background:var(--card2);border-radius:13px;padding:11px 16px;font-weight:750;font-size:13px;min-height:43px}.btn.primary{background:var(--lime);border-color:var(--lime);color:#132416}.btn.blue{background:#204b68;border-color:#3e6e8b}.btn.danger{background:#4a2233;border-color:#a74f5b;color:#ffd6df}.btn.ghost{background:transparent}.btn:hover:not(:disabled){filter:brightness(1.12)}
+.notice{border:1px solid #8f6330;background:linear-gradient(110deg,#42302485,#1c2735);padding:12px 14px;border-radius:14px;display:flex;align-items:flex-start;gap:12px;font-size:13px;line-height:1.5;margin-bottom:14px}.notice strong{color:#ffe0a8}.notice span{color:#d9c8ad}.cards{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px}.panel{border:1px solid var(--edge);background:linear-gradient(170deg,#13263b,#101c2a);border-radius:var(--radius);box-shadow:0 15px 48px #020b143a;padding:17px;min-width:0}.title-row{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:12px}.panel-title{font-size:15px;font-weight:820;margin:0}.tiny{font-size:11px;color:var(--muted)}.tabbar{display:flex;gap:6px;flex-wrap:wrap}.tabbar button{border:1px solid var(--edge);background:#0b1a28;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:750}.tabbar button[aria-selected="true"]{background:#2b4b61;border-color:#63bce1;color:white}.mode-select{display:flex;gap:8px;margin-bottom:13px}.mode-select button{flex:1;border:1px solid var(--edge);background:#091b2a;padding:11px 8px;border-radius:12px;font-size:12px;font-weight:700;min-width:0}.mode-select button.active{border-color:var(--blue);background:#1b435a;color:#cbefff}
+.field-wrap{position:relative;background:#103626;border-radius:15px;overflow:hidden;border:1px solid #2c5e45}.field-wrap canvas{display:block;width:100%;height:auto;aspect-ratio: 1.96;max-height:310px}.field-watermark{position:absolute;bottom:9px;right:11px;font-size:10px;letter-spacing:1px;color:#daf3d3aa;pointer-events:none}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:13px}.control-head{font-size:13px;font-weight:740;margin:0 0 8px;display:flex;justify-content:space-between;gap:5px}.joy-col{min-width:0;display:flex;flex-direction:column;align-items:center}.joystick{width:min(100%,235px);aspect-ratio:1;position:relative;border-radius:50%;border:2px solid #385772;background:radial-gradient(circle at 30% 30%,#2b445b,#101e2e 69%);touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden;cursor:grab}.joystick:before{content:"";position:absolute;inset:18%;border:1px solid #43657c;border-radius:50%}.joystick:after{content:"";position:absolute;left:50%;top:50%;width:1px;height:87%;background:linear-gradient(transparent,#ffffff20,transparent);transform:translate(-50%,-50%);pointer-events:none}.joy-horizontal{position:absolute;left:7%;right:7%;top:50%;height:1px;background:#ffffff23}.joy-knob{position:absolute;left:50%;top:50%;width:32%;height:32%;border-radius:50%;background:radial-gradient(circle at 35% 26%,#c7ff83,#74af43);border:5px solid #8ac851;box-shadow:0 4px 18px #0007;transform:translate(-50%,-50%);pointer-events:none;z-index:1}.joy-n{position:absolute;font-size:13px;color:#89a6ba;pointer-events:none}.joy-n.up{top:6%;left:50%;transform:translateX(-50%)}.joy-n.down{bottom:6%;left:50%;transform:translateX(-50%)}.joy-n.left{left:7%;top:50%}.joy-n.right{right:7%;top:50%}.joystick.locked{opacity:.36;cursor:not-allowed}.action-col{display:flex;flex-direction:column;gap:9px;justify-content:space-between}.shoot{flex:1;border:none;border-radius:20px;background:radial-gradient(circle at 40% 30%,#c8ff82,#7ebf36);font-size:30px;color:#102415;font-weight:950;min-height:91px;box-shadow:inset 0 -7px #4c8922}.shoot:active:not(:disabled){transform:scale(.98)}.emergency{min-height:68px;background:#5c2535;color:#ffe8ed;border:2px solid #e57485;border-radius:17px;font-size:18px;font-weight:900;letter-spacing:.3px}.emergency:active{background:#9e2e40}.lock-hint{font-size:11px;color:var(--muted);line-height:1.45;text-align:center;padding:4px}
+.slider-area{margin-top:16px;border-top:1px solid var(--edge);padding-top:15px}.range-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:730;margin-bottom:9px}.speed{width:100%;accent-color:var(--lime)}.speed-options{display:flex;gap:6px;margin-top:10px}.speed-options button{flex:1;background:#0d1e2f;border:1px solid var(--edge);border-radius:9px;padding:9px;font-weight:700;font-size:12px}.speed-options button.current{border-color:var(--lime);color:var(--lime)}.motor-values{display:flex;justify-content:space-between;gap:7px;margin-top:13px;color:var(--muted);font-size:12px}.motor-values b{color:#e8f5ff;font-variant-numeric:tabular-nums}
+.right-stack{display:flex;flex-direction:column;gap:14px}.section{border-radius:13px;background:#0c1c2d;border:1px solid #213b50;padding:13px;margin-top:10px}.kv{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;font-size:12px}.kv:last-child{margin-bottom:0}.kv span{color:var(--muted)}.kv b{font-weight:750;text-align:right;word-break:break-word}.unverified{color:var(--amber)!important}.passed{color:var(--lime)!important}.failed{color:var(--danger)!important}.inline-actions{display:flex;gap:7px;flex-wrap:wrap}.inline-actions>*{flex:1}.readouts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.readout{background:#0b1a28;border:1px solid var(--edge);border-radius:12px;padding:10px 5px;text-align:center}.readout strong{display:block;font-size:20px;font-weight:850;font-variant-numeric:tabular-nums;margin-top:6px}.timer-actions{display:flex;gap:6px;margin-top:9px}.timer-actions button{flex:1;padding:9px 5px}.score{display:flex;align-items:center;justify-content:space-between;gap:10px}.team{text-align:center;flex:1}.team .num{font-size:34px;font-weight:900;line-height:1.2;font-variant-numeric:tabular-nums}.team .name{font-size:12px;color:var(--muted)}.team-controls{display:flex;gap:6px;justify-content:center;margin-top:7px}.team-controls button{border-radius:9px;background:#203a52;border:1px solid #40607a;width:35px;height:31px;font-weight:900}.dash{opacity:.4}.screen-block{display:none}.screen-block.show{display:block}.diag h3{font-size:14px;margin:16px 0 7px}.diag-sub{font-size:12px;color:var(--muted);line-height:1.55}.mono{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}.device-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.device-info{border:1px solid var(--edge);padding:9px;border-radius:11px;background:#0a1c2d}.device-info .k{color:var(--muted);font-size:11px}.device-info .v{font-size:12px;font-weight:800;margin-top:7px;overflow-wrap:anywhere}.service-list{display:flex;flex-direction:column;gap:8px}.service{border:1px solid var(--edge);background:#0c2031;padding:10px;border-radius:12px}.service b{font-size:12px}.service .characteristic{font-size:11px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}.logs{height:270px;overflow:auto;background:#06121e;border:1px solid #324359;border-radius:13px;padding:10px;font:11px ui-monospace,Consolas,monospace;color:#c5d8ed;white-space:pre-wrap;overflow-wrap:anywhere}.diag-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.small-note{font-size:12px;color:var(--muted);line-height:1.7}.footer{padding:20px 1px 0;font-size:11px;line-height:1.6;color:var(--muted)}.footer a{color:var(--blue)}
+@media(max-width:790px){.shell{padding:12px 12px 24px}.cards{grid-template-columns:1fr}.right-stack{display:grid;grid-template-columns:1fr 1fr}.top{gap:10px}.brand{font-size:16px}.panel{padding:13px}.controls{gap:12px}.joystick{max-width:220px}.field-wrap canvas{aspect-ratio:1.9}.right-stack .panel{min-width:0}}
+@media(max-width:560px){.right-stack{display:flex}.top-actions{width:100%}.tabbar{flex:1}.tabbar button{flex:1}.brand{font-size:17px}.notice{font-size:12px}.controls{grid-template-columns:1.02fr .98fr}.joystick{width:min(100%,175px)}.shoot{font-size:25px;min-height:88px}.emergency{font-size:15px;min-height:58px}.panel{padding:12px}.field-wrap canvas{aspect-ratio:1.55}.device-grid{grid-template-columns:1fr}.mode-select button{font-size:11px}}
+@media(orientation:landscape) and (max-height:550px){.shell{max-width:1100px}.cards{grid-template-columns:1.6fr 1fr}.right-stack{display:flex}.field-wrap{display:none}.controls{margin-top:6px}.joystick{width:min(175px,34vh)}.action-col .shoot{min-height:65px}.action-col .emergency{min-height:55px}.slider-area{margin-top:8px;padding-top:8px}.top{padding-bottom:7px}.notice{padding:7px;margin-bottom:8px}.panel{padding:10px}.panel-title{font-size:13px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+.trial-area{margin-top:16px;padding:13px;border:1px solid #6d633c;background:#1c2732;border-radius:15px}
+.trial-title{font-size:14px;font-weight:850;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+.trial-select{display:block;width:100%;background:#0c1c2d;color:#eef8ff;border:1px solid #476c83;border-radius:10px;min-height:43px;padding:9px;margin:8px 0 12px}
+.trial-check{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.6;margin-bottom:13px}
+.trial-check input{accent-color:#b8f16b;width:20px;height:20px;flex:none}
+.trial-buttons{display:flex;gap:8px;flex-wrap:wrap}.trial-buttons>button{flex:1;min-width:132px}
+.trial-result{margin-top:9px;background:#0c1a2b;border:1px solid #3d5060;padding:10px;border-radius:10px;font-size:12px;line-height:1.55}
+.dpad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;max-width:320px;margin:12px auto}.dpad button{min-height:57px;font-size:20px;touch-action:none;-webkit-user-select:none;user-select:none}.dpad button small{display:block;font-size:11px;margin-top:2px}.drive-btn{border-color:#4b798f;background:#1c4055}
+</style>
+</head>
+<body>
+<div class="shell">
+ <header class="top"><div class="logo"><div class="mark" aria-hidden="true">⚽</div><div><div class="brand">Hamster S <span style="color:var(--lime)">Soccer</span></div><div class="sub">iPHONE CONTROLLER · v1.3 A006 TARGET PROBE</div></div></div><div class="top-actions"><div class="tabbar" role="tablist"><button id="tabGame" role="tab" aria-selected="true">🎮 조종 화면</button><button id="tabDiag" role="tab" aria-selected="false">🛠 BLE 진단</button></div><span class="pill"><span id="statusDot" class="dot"></span><span id="connLabel">연결 전</span></span></div></header>
+ <div class="notice" role="status"><div aria-hidden="true" style="font-size:21px">⚠️</div><div><strong>실물 테스트 실험판 · 실제 바퀴 회전 여부 확인 필요</strong><br><span>공개 구형 햄스터 자료의 동작 특성 A006을 두 경로에서 직접 찾아봅니다. A006을 찾지 못하면 모터 명령은 전송하지 않습니다. 햄스터 S 호환성 미확인. <b>바퀴를 공중에 띄우고 실험하고, 이상 동작 시 로봇 전원을 즉시 끄세요.</b></span></div></div>
+ <div id="viewGame" class="screen-block show"><div class="cards">
+  <section class="panel"><div class="title-row"><h1 class="panel-title">로봇 축구 조종판</h1><span id="modeTag" class="pill">연습 모드</span></div>
+   <div class="mode-select" aria-label="작동 모드"><button id="modeSim" class="active" aria-pressed="true">🎮 연습 / 시뮬레이션</button><button id="modeBLE" aria-pressed="false">📶 실제 BLE / 실험</button></div>
+   <div class="field-wrap" id="fieldWrap"><canvas id="field" width="800" height="408" aria-label="축구 시뮬레이션 경기장">시뮬레이션을 지원하지 않는 브라우저입니다.</canvas><div class="field-watermark" id="watermark">SIMULATOR</div></div>
+   <div class="controls"><div class="joy-col"><div class="control-head" style="width:100%"><span>🕹 이동 조이스틱</span><span class="tiny" id="driveText">정지</span></div><div id="joystick" class="joystick" role="group" aria-label="이동 조이스틱"><span class="joy-n up">▲</span><span class="joy-n down">▼</span><span class="joy-n left">◀</span><span class="joy-n right">▶</span><div class="joy-horizontal"></div><div id="knob" class="joy-knob"></div></div></div>
+   <div class="action-col"><div class="control-head"><span>⚽ 액션</span><span class="tiny" id="kickText">준비</span></div><button id="shoot" class="shoot">슛! ⚽</button><button id="eStop" class="emergency">■ 긴급 정지</button><div id="lockHint" class="lock-hint">연습 모드에서만 동작해요.</div></div></div>
+   <section class="trial-area" id="trialArea" aria-label="BLE 프로토콜 실험">
+      <div class="trial-title">🔬 실제 로봇 제어 실험 <span id="trialStatus" class="tiny unverified">먼저 연결하세요</span></div>
+      <p class="small-note">이전 900A 20/11바이트 시험은 전송 성공이었지만 회전 미확인이었어. 이번 버전은 900A 센서 특성에 바퀴 명령을 보내지 않고, <b>A006 동작 특성이 실제로 조회될 때만</b> 수동 저속 시험을 허용해. 구형 햄스터 기준이며 S 호환성 미확인이야.</p>
+      <label class="small-note" for="trialProtocol">① 통신 후보 선택</label>
+      <select id="trialProtocol" class="trial-select"><option value="samea00611">9001 / A006 · 11바이트 (새 경로 확인)</option><option value="a00611">A000 / A006 · 11바이트 (기존 참조)</option><option value="samea00620">9001 / A006 · 20바이트 (기존 문서)</option><option value="a00620">A000 / A006 · 20바이트 (기존 문서)</option></select>
+      <label class="trial-check"><input id="lifted" type="checkbox"><span>② 로봇 바퀴를 공중에 띄웠고, 즉시 전원을 끌 수 있어.</span></label>
+      <div class="trial-buttons"><button id="testMotor" class="btn blue">③ 전진 0.25초 시험</button><button id="confirmedMotor" class="btn primary" disabled>④ 실제로 바퀴가 돌았어</button></div>
+      <div class="trial-result" id="trialResult" role="status">아직 시험하지 않았어. 연결 후 실험 모드를 선택해줘.</div>
+      <div class="trial-title" style="margin-top:14px">방향 버튼 · 동작 확인 후 활성화</div>
+      <div class="dpad"><span></span><button id="dF" class="btn drive-btn" data-drive="forward" disabled>▲<small>전진</small></button><span></span><button id="dL" class="btn drive-btn" data-drive="left" disabled>◀<small>좌회전</small></button><button id="dS" class="btn danger" data-drive="stop">■<small>정지</small></button><button id="dR" class="btn drive-btn" data-drive="right" disabled>▶<small>우회전</small></button><span></span><button id="dB" class="btn drive-btn" data-drive="backward" disabled>▼<small>후진</small></button><span></span></div>
+      <p class="small-note">방향 버튼은 누르는 동안에만 움직임을 보낸 후 손을 떼면 정지 명령을 보냅니다. 연결이 끊기면 정지 명령이 전달되지 않을 수 있어요. <b>슛은 부착 장치의 제어 방식 확인 전까지 실제 전송하지 않습니다.</b></p>
+     </section>
+     <div class="slider-area"><div class="range-row"><label for="speed">속도 제한</label><strong id="speedLabel">20%</strong></div><input class="speed" type="range" id="speed" min="0" max="100" step="5" value="20"><div class="speed-options"><button id="slow" class="current">느림 20%</button><button id="mid">보통 50%</button><button id="fast">빠름 80%</button></div><div class="motor-values"><span>왼쪽 바퀴: <b id="leftValue">0</b></span><span>오른쪽 바퀴: <b id="rightValue">0</b></span><span id="inputValue">X 0.00 / Y 0.00</span></div></div>
+  </section>
+  <aside class="right-stack"><section class="panel"><div class="title-row"><h2 class="panel-title">📶 로봇 연결</h2><span id="controlChip" class="tiny unverified">실물 실험 대기</span></div><div class="inline-actions"><button class="btn primary" id="connect">로봇 검색·연결</button><button class="btn" id="disconnect" disabled>연결 해제</button></div><div class="section"><div class="kv"><span>블루투스 기기</span><b id="deviceName">미연결</b></div><div class="kv"><span>GATT 상태</span><b id="gattValue">연결 전</b></div><div class="kv"><span>제어 가능 상태</span><b class="unverified" id="controlValue">미검증 / 잠금</b></div><div class="kv"><span>실제 패킷 송신</span><b class="unverified" id="writeValue">실험 승인 전 차단</b></div></div><p class="small-note">Bluefy에서 HTTPS로 접속한 경우 BLE 검색이 가능합니다. Safari에서는 검색 기능이 지원되지 않을 수 있습니다.</p><button id="goDiag" class="btn blue" style="width:100%">기기 정보 · UUID 확인</button></section>
+  <section class="panel"><div class="title-row"><h2 class="panel-title">🏆 축구 스코어</h2><span class="tiny">수동 기록</span></div><div class="score"><div class="team"><div class="name">🔵 BLUE</div><div id="scoreBlue" class="num">0</div><div class="team-controls"><button data-score="blue" data-delta="-1" aria-label="파랑팀 점수 감소">−</button><button data-score="blue" data-delta="1" aria-label="파랑팀 점수 증가">+</button></div></div><div class="dash">:</div><div class="team"><div class="name">🔴 RED</div><div id="scoreRed" class="num">0</div><div class="team-controls"><button data-score="red" data-delta="-1" aria-label="빨강팀 점수 감소">−</button><button data-score="red" data-delta="1" aria-label="빨강팀 점수 증가">+</button></div></div></div></section>
+  <section class="panel"><div class="title-row"><h2 class="panel-title">⏱ 경기 타이머</h2><select id="duration" style="background:#10263a;color:white;border:1px solid var(--edge);border-radius:9px;padding:7px"><option value="60">1분</option><option value="180" selected>3분</option><option value="300">5분</option></select></div><div class="readouts"><div class="readout" style="grid-column:span 3"><span class="tiny">남은 시간</span><strong id="clock">03:00</strong></div></div><div class="timer-actions"><button id="timerStart" class="btn primary">시작</button><button id="timerPause" class="btn">일시정지</button><button id="timerReset" class="btn">초기화</button></div></section></aside>
+ </div></div>
+ <div id="viewDiag" class="screen-block diag"><section class="panel"><div class="title-row"><h2 class="panel-title">BLE 연결 진단 · 실험 로그</h2><span class="pill">DFU 명령 금지</span></div><div class="diag-sub">이 화면은 기기 정보와 실제 패킷 송신 성공/실패를 기록합니다. <b>쓰기 허용은 수동 실험 후이며, DFU에는 절대 기록하지 않습니다.</b></div>
+ <div class="device-grid" style="margin-top:15px"><div class="device-info"><div class="k">이름</div><div class="v" id="diagName">-</div></div><div class="device-info"><div class="k">브라우저</div><div class="v" id="browser">-</div></div><div class="device-info"><div class="k">지원 상태</div><div class="v" id="support">-</div></div><div class="device-info"><div class="k">제조사 2A29</div><div class="v" id="manufacturer">읽기 전</div></div><div class="device-info"><div class="k">모델 2A24</div><div class="v" id="model">읽기 전</div></div><div class="device-info"><div class="k">펌웨어 2A26</div><div class="v" id="firmware">읽기 전</div></div></div>
+ <div class="diag-actions"><button id="probeEffector" class="btn primary">🔎 A006 경로 확인 (쓰기 없음)</button><button id="readInfo" class="btn blue">기기 정보 읽기</button><button id="scanServices" class="btn">서비스 재조회</button><button id="subscribe" class="btn">900A 알림 구독</button></div><div id="probeResult" class="trial-result" role="status">먼저 연결한 뒤 ‘A006 경로 확인’을 눌러줘. 이 단계는 읽기 전용이고 로봇이 움직이지 않아.</div>
+ <h3>발견된 서비스 / 특성</h3><div id="services" class="service-list"><div class="small-note">BLE에 연결한 뒤 서비스가 표시됩니다.</div></div>
+ <h3>진단 기록</h3><div id="logs" class="logs" aria-live="polite">아직 진단 이벤트가 없습니다.</div><div class="diag-actions"><button id="copyLog" class="btn">📋 로그 복사</button><button id="saveLog" class="btn">⬇ JSON 다운로드</button><button id="clearLog" class="btn ghost">화면 로그 지우기</button></div>
+ <p class="small-note"><b>알려진 참고 UUID</b><br>9001 / 900A: 실기 센서 Notify 및 Write 특성 (이 버전에서 바퀴 명령 금지).<br>A006: 구형 햄스터 문서의 모터용 특성. 9001 또는 A000 밑에 있는지 직접 조회 (햄스터 S 적용 미확인).<br>FE59: Nordic DFU (검색하지 않으며 쓰기 금지).<br>실기에서 A000가 없어도 앱 오류로 단정하지 않습니다.</p>
+ </section></div>
+ <footer class="footer">© 2026 Hamster S Soccer Controller · v1.3 A006 경로 진단판 · 승인한 저속 시험에서는 미검증 형식의 명령을 실제 송신합니다.<br>기기명 및 Bluetooth 데이터는 브라우저 내부에서만 처리하고, 사용자가 복사/다운로드할 때만 내보냅니다. 이 앱은 로보메이션의 공식 앱이 아닙니다.</footer>
+</div>
+<script>
+'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const C = Object.freeze({
+    SENSOR_SERVICE:'00009001-9c80-11e3-a5e2-0800200c9a66', SENSOR_CHAR:'0000900a-9c80-11e3-a5e2-0800200c9a66',
+    LEGACY_EFFECTOR_SERVICE:'0000a000-9c80-11e3-a5e2-0800200c9a66',LEGACY_EFFECTOR_CHAR:'0000a006-9c80-11e3-a5e2-0800200c9a66',
+    INFO:'0000180a-0000-1000-8000-00805f9b34fb'
+  });
+  const MAX_EXP_SPEED=15, TEST_SPEED=8, TEST_MS=250, DRIVE_INTERVAL=160;
+  const s={mode:'sim',device:null,server:null,connected:false,services:[],manufacturer:'',model:'',firmware:'',notify:false,
+    controlReady:false, trialWasSent:false, trialInProgress:false, motionEpoch:0, testedProtocol:null, writeChar:null, protocol:'samea00611',effectorProbes:[],
+    events:[],sentCount:0,lastRx:'',active:false,locked:false,joy:{x:0,y:0},left:0,right:0,speed:15,
+    lastShoot:0,stopTimer:null,holdTimer:null,stopPending:false,txChain:Promise.resolve(),
+    sim:{x:225,y:190,angle:-Math.PI/2,ballX:400,ballY:204,ballVX:0,ballVY:0},
+    scores:{blue:0,red:0},clock:180,running:false,prevTime:0};
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const hex=v=>Array.from(v instanceof Uint8Array?v:new Uint8Array(v.buffer||v,v.byteOffset||0,v.byteLength||0),x=>x.toString(16).padStart(2,'0')).join(' ').toUpperCase();
+  const props=p=>['read','write','writeWithoutResponse','notify','indicate'].filter(x=>p&&p[x]);
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  function log(event,detail){let d={time:new Date().toISOString(),event,detail};s.events.push(d);if(s.events.length>500)s.events.shift();$('logs').textContent=s.events.slice(-110).map(v=>'['+v.time.slice(11,19)+'] '+v.event+(v.detail===undefined?'':' · '+(typeof v.detail==='object'?JSON.stringify(v.detail):String(v.detail)))).join('\n');$('logs').scrollTop=$('logs').scrollHeight;}
+  function support(){const ua=navigator.userAgent||'';$('browser').textContent=ua.includes('Bluefy')?'Bluefy':ua.includes('Safari')?'Safari / iOS':'기타 브라우저';$('support').textContent=(isSecureContext?'HTTPS':'비보안')+' · '+('bluetooth' in navigator?'BLE API 있음':'BLE API 없음');}
+  function wheels(x,y,p){const f=-y;return [Math.round(clamp(f+x,-1,1)*p),Math.round(clamp(f-x,-1,1)*p)];}
+  function usable(){return s.mode==='ble'&&s.connected&&s.controlReady&&!s.locked&&!s.trialInProgress&&$('lifted').checked&&!!s.writeChar&&s.testedProtocol===s.protocol;}
+  function status(){const sim=s.mode==='sim',able=usable();
+    $('modeSim').classList.toggle('active',sim);$('modeBLE').classList.toggle('active',!sim);$('modeSim').setAttribute('aria-pressed',String(sim));$('modeBLE').setAttribute('aria-pressed',String(!sim));
+    $('modeTag').textContent=sim?'연습 모드':able?'BLE 저속 제어 모드':'BLE 실험 모드';$('watermark').textContent=sim?'SIMULATOR':able?'BLE MOTOR TEST · UNVERIFIED':'BLE TEST · WHEELS UP';
+    $('connLabel').textContent=s.connected?'GATT 연결됨':sim?'연습 가능':'로봇 미연결';$('statusDot').className='dot '+(s.connected?'green':sim?'':'red');
+    $('deviceName').textContent=s.device?.name||'미연결';$('diagName').textContent=s.device?.name||'-';$('gattValue').textContent=s.connected?'연결됨':'연결 전';
+    $('connect').disabled=s.connected||!('bluetooth' in navigator);$('disconnect').disabled=!s.connected;
+    ['readInfo','scanServices','probeEffector'].forEach(k=>$(k).disabled=!s.connected);$('subscribe').disabled=!s.connected||s.notify;
+    $('trialProtocol').disabled=s.trialInProgress;$('testMotor').disabled=!s.connected||sim||!$('lifted').checked||s.trialInProgress||s.locked;
+    $('confirmedMotor').disabled=!s.trialWasSent||!s.connected||s.trialInProgress||s.locked||sim;
+    $('trialStatus').textContent=able?'✅ 실제 움직임 확인(사용자)':'미검증 · 사용자 확인 필요';
+    $('controlValue').textContent=able?'수동 확인 · 제한 제어':s.trialInProgress?'짧은 테스트 중':'미검증 / 잠금';
+    $('writeValue').textContent=s.sentCount?s.sentCount+'회 API 송신 성공 (기기 적용 미확인)':'실험 승인 전 차단';
+    $('controlChip').textContent=able?'실제 바퀴 움직임 사용자 확인':s.connected?'프로토콜 미검증':'제어 미검증';$('controlChip').className='tiny '+(able?'passed':'unverified');
+    $('joystick').classList.toggle('locked',!(sim&&!s.locked||able));$('shoot').disabled=!(sim&&!s.locked);
+    $('lockHint').textContent=sim?'슛은 시뮬레이션에서만 동작':able?'바퀴만 저속 제어 중 · 실제 슛은 미검증':s.locked?'잠금 상태 · 모드 전환 후 재시험':'바퀴 시험 뒤 확인 버튼을 누르면 조이스틱이 열려요';
+    $('driveText').textContent=sim?'연습':able?'BLE 저속':'BLE 잠금';$('testMotor').textContent=s.trialInProgress?'시험 중…':'③ 전진 0.25초 시험';
+    document.querySelectorAll('.drive-btn').forEach(b=>b.disabled=!able);
+  }
+  function setMode(mode){stopMotion('모드 변경');s.mode=mode;s.locked=false;s.controlReady=false;s.trialWasSent=false;s.testedProtocol=null;s.writeChar=null;status();log('모드 변경',mode);}
+  function setSpeed(p){s.speed=clamp(Math.round(Number(p)||0),0,100);$('speed').value=s.speed;$('speedLabel').textContent=s.speed+'%'+(s.mode==='ble'?' (실기 최대 '+MAX_EXP_SPEED+'%)':'');['slow','mid','fast'].forEach((k,i)=>$(k).classList.toggle('current',s.speed===[20,50,80][i]));drivePreview();}
+  function positionKnob(){$('knob').style.left=`calc(50% + ${s.joy.x*33}%)`;$('knob').style.top=`calc(50% + ${s.joy.y*33}%)`;}
+  function drivePreview(){let [l,r]=wheels(s.joy.x,s.joy.y,s.mode==='ble'?Math.min(s.speed,MAX_EXP_SPEED):s.speed);if(s.locked||(s.mode==='ble'&&!usable()))l=r=0;s.left=l;s.right=r;$('leftValue').textContent=l;$('rightValue').textContent=r;$('inputValue').textContent='X '+s.joy.x.toFixed(2)+' / Y '+s.joy.y.toFixed(2);}
+  function resetJoy(){s.active=false;s.joy.x=0;s.joy.y=0;positionKnob();drivePreview();}
+  function payload(protocol,left,right){const n=protocol.endsWith('11')?11:20;const v=new Uint8Array(n);v[0]=0;v[1]=0;v[2]=0x10;v[3]=(clamp(Math.round(left),-MAX_EXP_SPEED,MAX_EXP_SPEED)+256)&255;v[4]=(clamp(Math.round(right),-MAX_EXP_SPEED,MAX_EXP_SPEED)+256)&255;
+    if(n>=20){v[12]=2;v[13]=3;}return v;
+  }
+  function protocolUUID(p){if(p.startsWith('samea006'))return [C.SENSOR_SERVICE,C.LEGACY_EFFECTOR_CHAR];if(p.startsWith('a006'))return [C.LEGACY_EFFECTOR_SERVICE,C.LEGACY_EFFECTOR_CHAR];throw Error('900A는 센서 특성이므로 이 버전에서는 모터 명령 전송 불가');}
+  async function getWritable(p){if(!s.server?.connected)throw Error('BLE 연결이 끊겼습니다');const [srv,ch]=protocolUUID(p),svc=await s.server.getPrimaryService(srv),c=await svc.getCharacteristic(ch);if(!c.properties.writeWithoutResponse&&!c.properties.write)throw Error('특성이 쓰기 권한을 제공하지 않습니다');return c;}
+  async function writeRaw(v,why,characteristic=s.writeChar){
+    if(!s.server?.connected||!characteristic)throw Error('BLE 연결/쓰기 특성이 없음');
+    // writeWithoutResponse is an accepted GATT write, not a motion acknowledgement.
+    if(characteristic.properties.writeWithoutResponse&&characteristic.writeValueWithoutResponse){await characteristic.writeValueWithoutResponse(v);}
+    else if(characteristic.properties.write&&characteristic.writeValueWithResponse){await characteristic.writeValueWithResponse(v);}
+    else if(characteristic.writeValue){await characteristic.writeValue(v);}
+    else throw Error('브라우저에서 쓰기 메서드 미지원');
+    s.sentCount++;log('BLE TX API 성공 · '+why,{uuid:characteristic.uuid,bytes:v.length,hex:hex(v),motorConfirmed:false});
+  }
+  function enqueue(v,why,ch){const job=()=>writeRaw(v,why,ch);const result=s.txChain.then(job,job);s.txChain=result.catch(()=>{});return result;}
+  function sendMove(l,r,why,epoch){const job=()=>epoch===s.motionEpoch&&usable()?writeRaw(payload(s.protocol,l,r),why):undefined;const task=s.txChain.then(job,job);s.txChain=task.catch(()=>{});return task;}
+  async function sendStop(reason){if(!s.connected||!s.writeChar)return;const ch=s.writeChar,p=s.protocol;
+    for(let i=0;i<3;i++){try{await enqueue(payload(p,0,0),'정지 '+reason+' '+(i+1)+'/3',ch);}catch(e){log('정지 전송 실패',String(e?.message||e));break;}if(i<2)await sleep(60);}
+  }
+  function clearHold(){if(s.holdTimer){clearInterval(s.holdTimer);s.holdTimer=null;}if(s.stopTimer){clearTimeout(s.stopTimer);s.stopTimer=null;}}
+  function stopMotion(reason){s.motionEpoch++;clearHold();resetJoy();if(s.mode==='ble'&&s.connected&&s.writeChar){void sendStop(reason).catch(e=>log('정지 전송 오류',String(e)));}log('정지 요청',reason);}
+  function emergency(){s.motionEpoch++;clearHold();resetJoy();s.locked=true;s.controlReady=false;status();if(s.mode==='ble'){
+      // Send stop before dropping the active protocol handle. Keep it for future stop attempts.
+      void sendStop('긴급 정지').catch(e=>log('긴급 정지 통신 오류',String(e)));
+      $('trialResult').textContent='긴급 정지 요청 전송 중/완료 여부는 로그를 확인. 실제로 멈추지 않으면 로봇 전원을 즉시 끄세요.';
+    }else log('시뮬레이션 긴급 정지','완료');}
+  function disarm(reason){clearHold();resetJoy();s.controlReady=false;s.trialWasSent=false;s.testedProtocol=null;s.writeChar=null;status();log('모터 제어 해제',reason);}
+  async function testMotor(){if(s.mode!=='ble'||!s.connected||s.locked||!$('lifted').checked||s.trialInProgress)return;
+    const [wantedService,wantedChar]=protocolUUID(s.protocol);if(!s.effectorProbes.some(x=>x.status==='FOUND'&&x.writable&&x.service.toLowerCase()===wantedService&&x.characteristic.toLowerCase()===wantedChar)){$('trialResult').textContent='쓰기 가능한 A006 경로를 먼저 BLE 진단에서 확인해야 해. 확인되지 않으면 어떤 모터 명령도 전송하지 않아.';log('시험 차단','A006 경로 미확인');return;}
+    s.trialInProgress=true;s.controlReady=false;s.trialWasSent=false;s.testedProtocol=null;s.writeChar=null;status();const p=s.protocol;
+    try{
+      const ch=await getWritable(p);s.writeChar=ch;
+      log('시험 프로토콜 선택',{protocol:p,uuid:ch.uuid,transport:props(ch.properties),testSpeed:TEST_SPEED,testMs:TEST_MS});
+      $('trialResult').textContent='바퀴 전진 저속 '+TEST_MS+'ms 전송 → 정지 3회 전송 중…';
+      await enqueue(payload(p,TEST_SPEED,TEST_SPEED),'테스트 저속 전진 0.25초',ch);
+      await sleep(TEST_MS);
+      await sendStop('자동 타임아웃');
+      s.trialWasSent=true;s.testedProtocol=p;
+      $('trialResult').textContent='BLE 쓰기 API는 성공했어. 로봇 바퀴가 실제로 돌았으면 ④ 버튼을 눌러줘. 움직이지 않았다면 다른 후보를 선택해서 다시 시험해. 전송 성공만으로 실제 동작은 확인되지 않아.';
+      log('시험 완료','전송 성공 · 모터 회전 여부는 사용자가 확인해야 함');
+    }catch(e){s.trialWasSent=false;const m=e?.message||String(e);$('trialResult').textContent='시험 실패: '+m+' / 다른 후보를 선택하거나 진단 로그를 확인해줘.';log('시험 실패',m);if(s.connected&&s.writeChar)await sendStop('시험 예외');}
+    finally{s.trialInProgress=false;status();}
+  }
+  function confirmMotor(){if(!s.trialWasSent||!s.connected||s.trialInProgress||s.mode!=='ble'||s.locked||s.testedProtocol!==s.protocol)return;
+    s.controlReady=true;status();$('trialResult').textContent='실제 회전 확인 기록됨. 저속 방향 버튼과 조이스틱 제어가 열렸어. 움직임이 이상하면 즉시 긴급 정지 또는 로봇 전원을 끄세요.';log('사용자 회전 확인',{protocol:s.protocol});}
+  function startHold(l,r,why){if(!usable())return;clearHold();const limit=Math.min(s.speed,MAX_EXP_SPEED);
+    const scaled=(v)=>clamp(Math.round(v*limit),-MAX_EXP_SPEED,MAX_EXP_SPEED);
+    const left=scaled(l),right=scaled(r),epoch=s.motionEpoch;
+    const fire=()=>{if(!usable()){stopMotion('상태 변경');return;}void sendMove(left,right,'방향 유지 '+why,epoch).catch(e=>{log('방향 전송 오류',String(e?.message||e));emergency();});};
+    fire();s.holdTimer=setInterval(fire,DRIVE_INTERVAL);
+    // Hold-to-drive can still fail if Web Bluetooth dies; short maximum single hold is intentional.
+    s.stopTimer=setTimeout(()=>{stopMotion('단일 입력 최대 1.5초');$('trialResult').textContent='한 번 누르기 최대 1.5초로 제한했어. 계속 조종하려면 버튼에서 손을 뗐다가 다시 눌러줘.';},1500);
+  }
+  function updateDirection(e){const b=$('joystick').getBoundingClientRect(),cx=b.left+b.width/2,cy=b.top+b.height/2,r=b.width*.37;let x=(e.clientX-cx)/r,y=(e.clientY-cy)/r;const n=Math.hypot(x,y);if(n>1){x/=n;y/=n;}s.joy.x=x;s.joy.y=y;positionKnob();drivePreview();}
+  const joy=$('joystick');
+  joy.addEventListener('pointerdown',e=>{if(!(s.mode==='sim'&&!s.locked||usable()))return;e.preventDefault();s.active=true;joy.setPointerCapture(e.pointerId);updateDirection(e);if(s.mode==='ble'){let [l,r]=wheels(s.joy.x,s.joy.y,1);startHold(l,r,'조이스틱');}});
+  joy.addEventListener('pointermove',e=>{if(!s.active)return;e.preventDefault();updateDirection(e);if(s.mode==='ble'&&usable()){
+      // Queue a refreshed wheel target; capped lifetime and write rate from startHold.
+      let [l,r]=wheels(s.joy.x,s.joy.y,1),epoch=s.motionEpoch;if(s.holdTimer)clearInterval(s.holdTimer);
+      const fire=()=>{if(!usable())return;let p=Math.min(MAX_EXP_SPEED,s.speed);void sendMove(Math.round(l*p),Math.round(r*p),'조이스틱 이동',epoch).catch(err=>{log('조이스틱 전송 실패',String(err));emergency();});};
+      fire();s.holdTimer=setInterval(fire,DRIVE_INTERVAL);
+  }});
+  const release=e=>{if(s.active){e.preventDefault();stopMotion('터치 해제');}if(joy.hasPointerCapture?.(e.pointerId))joy.releasePointerCapture(e.pointerId);};
+  joy.addEventListener('pointerup',release);joy.addEventListener('pointercancel',release);joy.addEventListener('lostpointercapture',()=>{if(s.active)stopMotion('포인터 캡처 소실');});
+  document.querySelectorAll('[data-drive]').forEach(b=>{
+    const dir=b.dataset.drive;
+    if(dir==='stop'){b.onclick=()=>stopMotion('정지 버튼');return;}
+    const values={forward:[1,1],backward:[-1,-1],left:[-1,1],right:[1,-1]};
+    b.addEventListener('pointerdown',e=>{if(!usable())return;e.preventDefault();b.setPointerCapture(e.pointerId);startHold(...values[dir],dir);});
+    const release=()=>{if(s.holdTimer||s.stopTimer)stopMotion('방향 버튼 해제');};
+    b.addEventListener('pointerup',release);b.addEventListener('pointercancel',release);b.addEventListener('lostpointercapture',release);
+  });
+  $('shoot').onclick=()=>{if(s.mode!=='sim'||s.locked)return;const t=Date.now();if(t-s.lastShoot<800)return;s.lastShoot=t;$('kickText').textContent='슛!';setTimeout(()=>$('kickText').textContent='준비',400);
+    const p=s.sim,d=Math.hypot(p.ballX-p.x,p.ballY-p.y);if(d>85){p.ballX=p.x+Math.cos(p.angle)*35;p.ballY=p.y+Math.sin(p.angle)*35;}p.ballVX=Math.cos(p.angle)*360;p.ballVY=Math.sin(p.angle)*360;log('슛','시뮬레이션만 실행 · 실제 액세서리 송신 없음');};
+  $('eStop').onclick=emergency;
+  $('modeSim').onclick=()=>setMode('sim');$('modeBLE').onclick=()=>setMode('ble');
+  $('speed').oninput=e=>setSpeed(e.target.value);$('slow').onclick=()=>setSpeed(20);$('mid').onclick=()=>setSpeed(50);$('fast').onclick=()=>setSpeed(80);
+  $('lifted').onchange=()=>{if(!$('lifted').checked&&s.controlReady){stopMotion('안전 확인 취소');disarm('바퀴 올림 확인 취소');}status();};
+  $('trialProtocol').onchange=()=>{stopMotion('프로토콜 변경');disarm('후보 변경');s.protocol=$('trialProtocol').value;$('trialResult').textContent='후보 변경됨. 먼저 ③ 0.25초 시험 후 실제 회전 여부를 확인해줘.';status();};
+  $('testMotor').onclick=testMotor;$('confirmedMotor').onclick=confirmMotor;
+  function goTab(tab){const diag=tab==='diag';$('viewGame').classList.toggle('show',!diag);$('viewDiag').classList.toggle('show',diag);$('tabGame').setAttribute('aria-selected',String(!diag));$('tabDiag').setAttribute('aria-selected',String(diag));if(diag){stopMotion('진단 화면 이동');support();}}
+  $('tabGame').onclick=()=>goTab('game');$('tabDiag').onclick=()=>goTab('diag');$('goDiag').onclick=()=>goTab('diag');
+  async function discover(){if(!s.server?.connected)return;const found=[];
+    for(const [label,id] of [['기기 정보',C.INFO],['9001 실기 관찰',C.SENSOR_SERVICE],['A000 구형 참조',C.LEGACY_EFFECTOR_SERVICE]]){
+      try{const svc=await s.server.getPrimaryService(id),chars=await svc.getCharacteristics(),entry={label,uuid:svc.uuid,characteristics:chars.map(c=>({uuid:c.uuid,properties:props(c.properties)}))};found.push(entry);log('서비스 발견',entry);}catch(e){log('서비스 접근 실패',{label,reason:String(e?.message||e)});}
+    }s.services=found;renderServices();}
+  function renderServices(){const target=$('services');target.textContent='';if(!s.services.length){target.textContent='조회된 서비스가 없습니다.';return;}
+    for(const sv of s.services){const node=document.createElement('div');node.className='service';const title=document.createElement('b');title.textContent=sv.label;node.append(title);const u=document.createElement('div');u.className='mono';u.textContent=sv.uuid;node.append(u);
+      for(const c of sv.characteristics){const d=document.createElement('div');d.className='characteristic';d.textContent=c.uuid+' · '+c.properties.join(', ');node.append(d);}target.append(node);}
+  }
+  function disconnected(){s.connected=false;s.server=null;s.notify=false;s.services=[];s.effectorProbes=[];clearHold();resetJoy();s.controlReady=false;s.trialWasSent=false;s.writeChar=null;s.testedProtocol=null;status();log('BLE 연결 해제','정지 패킷 전달 불가. 움직임 지속 시 로봇 전원 스위치를 끄세요');}
+  $('connect').onclick=async()=>{if(!navigator.bluetooth){alert('Bluefy에서 HTTPS 사이트로 접속해 주세요.');return;}
+    try{log('기기 검색','사용자 선택 시작');const dev=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:[C.INFO,C.SENSOR_SERVICE,C.LEGACY_EFFECTOR_SERVICE]});
+      s.device=dev;dev.addEventListener('gattserverdisconnected',disconnected);log('기기 선택',{name:dev.name||'(이름 없음)'});
+      if(!/hamster/i.test(dev.name||'')){log('기기명 검증 실패','Hamster 이름이 없는 기기');alert('Hamster라는 이름의 기기만 실험에 사용할 수 있어요.');return;}
+      s.server=await dev.gatt.connect();s.connected=!!s.server.connected;s.locked=false;s.effectorProbes=[];status();log('GATT 연결','실기 동작은 아직 검증되지 않음');await discover();}
+    catch(e){log('연결 실패',String(e?.message||e));s.connected=!!s.device?.gatt?.connected;status();}
+  };
+  $('disconnect').onclick=()=>{stopMotion('연결 해제');setTimeout(()=>{try{s.device?.gatt?.disconnect();}catch(e){log('연결 해제 오류',String(e));}disconnected();},250);};
+  $('scanServices').onclick=discover;
+  async function probeEffectorPaths(){
+    if(!s.connected||!s.server?.connected)return;
+    const paths=[['9001 / A006',C.SENSOR_SERVICE,C.LEGACY_EFFECTOR_CHAR],['A000 / A006',C.LEGACY_EFFECTOR_SERVICE,C.LEGACY_EFFECTOR_CHAR]];
+    s.effectorProbes=[];
+    $('probeResult').textContent='A006 경로 읽기 전용 조회 중…';
+    for(const [label,srvId,chId] of paths){
+      try{const srv=await s.server.getPrimaryService(srvId);const ch=await srv.getCharacteristic(chId);
+        const entry={label,status:'FOUND',service:srv.uuid,characteristic:ch.uuid,properties:props(ch.properties),writable:!!(ch.properties.writeWithoutResponse||ch.properties.write)};
+        s.effectorProbes.push(entry);log('A006 경로 발견 · 쓰기 없음',entry);
+      }catch(e){const entry={label,status:'NOT_ACCESSIBLE',errorName:String(e?.name||'Error'),errorMessage:String(e?.message||e)};
+        s.effectorProbes.push(entry);log('A006 경로 확인 실패 · 쓰기 없음',entry);}
+    }
+    const found=s.effectorProbes.filter(x=>x.writable);
+    $('probeResult').textContent=found.length?('A006 제어 후보 발견: '+found.map(x=>x.label).join(', ')+'. 바퀴를 띄운 상태에서 일치하는 ① 후보를 선택하고 ③ 시험해. 로봇 동작은 아직 미확인.'):'현재 두 경로에서 쓰기 가능한 A006을 찾지 못했어. 추가 모터 패킷 전송은 멈추고 JSON 로그를 보내줘. 기기에 서비스가 절대 없다는 뜻은 아니야.';
+  }
+  $('probeEffector').onclick=probeEffectorPaths;
+  $('readInfo').onclick=async()=>{if(!s.connected)return;try{const svc=await s.server.getPrimaryService(C.INFO);for(const [id,name] of [['2a29','manufacturer'],['2a24','model'],['2a26','firmware']]){
+      try{const c=await svc.getCharacteristic(id),v=await c.readValue(),txt=new TextDecoder().decode(v).replace(/\u0000/g,'').trim();s[name]=txt||'(비어 있음)';$(name).textContent=s[name];log('기기 정보',{id,text:s[name]});}catch(e){log('정보 읽기 실패',{id,error:String(e?.message||e)});}}
+    }catch(e){log('정보 서비스 없음',String(e?.message||e));}};
+  $('subscribe').onclick=async()=>{if(!s.connected)return;try{const svc=await s.server.getPrimaryService(C.SENSOR_SERVICE),ch=await svc.getCharacteristic(C.SENSOR_CHAR);await ch.startNotifications();ch.addEventListener('characteristicvaluechanged',e=>{s.lastRx=hex(e.target.value);log('900A 수신 HEX',s.lastRx);});s.notify=true;status();log('900A 구독 성공','수신만 시작');}catch(e){log('900A 구독 실패',String(e?.message||e));}};
+  function exportData(){return {app:'Hamster S Soccer Controller v1.3 A006 Probe',exportedAt:new Date().toISOString(),userAgent:navigator.userAgent,mode:s.mode,gattConnected:s.connected,controlReady:s.controlReady,protocol:s.protocol,testedProtocol:s.testedProtocol,txApiSuccessCount:s.sentCount,lastRx:s.lastRx,effectorProbes:s.effectorProbes,device:{name:s.device?.name||null,manufacturer:s.manufacturer,model:s.model,firmware:s.firmware,services:s.services},safety:{mode:'MANUAL_OPT_IN_TEST',maxSpeed:MAX_EXP_SPEED,testSpeed:TEST_SPEED,testDurationMs:TEST_MS,alwaysHardwarePowerOffFallback:true,dfuWritesAllowed:false,shooterWritesAllowed:false},events:s.events};}
+  $('copyLog').onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(exportData(),null,2));log('로그 복사','성공');}catch(e){log('로그 복사 실패','JSON 다운로드를 사용해주세요');}};
+  $('saveLog').onclick=()=>{const blob=new Blob([JSON.stringify(exportData(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='hamster-s-v13-a006-log.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+  $('clearLog').onclick=()=>{s.events=[];$('logs').textContent='표시 로그를 지웠습니다.';};
+  document.querySelectorAll('[data-score]').forEach(b=>b.onclick=()=>{let k=b.dataset.score;s.scores[k]=Math.max(0,s.scores[k]+Number(b.dataset.delta));$('scoreBlue').textContent=s.scores.blue;$('scoreRed').textContent=s.scores.red;});
+  function clockText(){const t=Math.max(0,Math.ceil(s.clock));return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');}
+  $('timerStart').onclick=()=>{if(s.clock<=0)s.clock=Number($('duration').value);s.running=true;};$('timerPause').onclick=()=>s.running=false;
+  $('timerReset').onclick=()=>{s.running=false;s.clock=Number($('duration').value);$('clock').textContent=clockText();};$('duration').onchange=()=>$('timerReset').click();
+  window.addEventListener('blur',()=>{if(s.mode==='ble'){stopMotion('화면 포커스 이탈');}else if(s.active)stopMotion('화면 포커스 이탈');});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){stopMotion('화면 숨김');s.running=false;}});
+  // Original simulation retained.
+  function draw(){const canvas=$('field'),ctx=canvas.getContext('2d');if(!ctx)return;const w=800,h=408;ctx.clearRect(0,0,w,h);ctx.fillStyle='#174832';ctx.fillRect(0,0,w,h);for(let i=0;i<8;i++){if(i%2){ctx.fillStyle='#ffffff09';ctx.fillRect(i*100,0,100,h);}}ctx.strokeStyle='#a7deacaa';ctx.lineWidth=3;ctx.strokeRect(24,22,752,364);ctx.beginPath();ctx.moveTo(400,22);ctx.lineTo(400,386);ctx.moveTo(454,204);ctx.arc(400,204,54,0,Math.PI*2);ctx.stroke();ctx.strokeRect(24,120,78,168);ctx.strokeRect(698,120,78,168);ctx.strokeStyle='#ffffff88';ctx.strokeRect(0,167,24,74);ctx.strokeRect(776,167,24,74);
+    if(s.mode!=='sim'){ctx.fillStyle='#ddebd8';ctx.textAlign='center';ctx.font='bold 24px system-ui';ctx.fillText(s.controlReady?'BLE 바퀴 제어 실험':'BLE 0.25초 시험',400,197);ctx.font='15px system-ui';ctx.fillStyle='#b9d5cb';ctx.fillText('바퀴를 공중에 띄우고 테스트하세요.',400,227);return;}
+    const p=s.sim;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle+Math.PI/2);ctx.fillStyle='#f8d66e';round(ctx,-22,-29,44,58,10);ctx.fill();ctx.fillStyle='#465768';ctx.fillRect(-28,-23,8,18);ctx.fillRect(20,-23,8,18);ctx.fillRect(-28,9,8,18);ctx.fillRect(20,9,8,18);ctx.fillStyle='#354553';ctx.beginPath();ctx.arc(-9,-9,4.5,0,Math.PI*2);ctx.arc(9,-9,4.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff';ctx.fillRect(-8,-33,16,8);ctx.restore();ctx.beginPath();ctx.arc(p.ballX,p.ballY,11,0,Math.PI*2);ctx.fillStyle='#f5f7ff';ctx.fill();ctx.strokeStyle='#627487';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#394755';ctx.beginPath();ctx.arc(p.ballX,p.ballY,4,0,Math.PI*2);ctx.fill();}
+  function round(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+  function frame(now){const dt=Math.min(.05,Math.max(0,(now-(s.prevTime||now))/1000));s.prevTime=now;
+    if(s.running){s.clock=Math.max(0,s.clock-dt);if(!s.clock){s.running=false;log('경기 종료','타이머 완료');}$('clock').textContent=clockText();}
+    if(s.mode==='sim'){const p=s.sim;const avg=(s.left+s.right)/2,rot=s.left-s.right;p.angle+=rot*dt*.024;p.x=clamp(p.x+Math.cos(p.angle)*avg*dt*1.48,42,758);p.y=clamp(p.y+Math.sin(p.angle)*avg*dt*1.48,40,368);p.ballX+=p.ballVX*dt;p.ballY+=p.ballVY*dt;p.ballVX*=Math.pow(.12,dt);p.ballVY*=Math.pow(.12,dt);if(p.ballX<26||p.ballX>774){p.ballVX*=-.6;p.ballX=clamp(p.ballX,26,774);}if(p.ballY<28||p.ballY>380){p.ballVY*=-.6;p.ballY=clamp(p.ballY,28,380);}}
+    draw();requestAnimationFrame(frame);}
+  support();setSpeed(15);$('clock').textContent=clockText();status();log('앱 시작','v1.3 A006 후보 직접 조회 · 900A 센서 특성으로의 모터 쓰기 제외');requestAnimationFrame(frame);
+  window.HamsterSoccerTest={wheels,payload,protocolUUID,constants:C};
+})();
+</script>
+</body>
+</html>
